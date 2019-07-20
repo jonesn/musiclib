@@ -7,6 +7,7 @@
 (def FLAC_EXT ".FLAC")
 (def MP3_EXT ".MP3")
 (def ORPHAN "Orphan")
+(def WINDOWS_PATH_SEPARATOR "\\")
 
 (def ORPHAN-EXTENSIONS #{FLAC_EXT MP3_EXT})
 

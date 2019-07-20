@@ -16,12 +16,13 @@
 (defn construct-destination-path
   [root-path-str metadata-map]
   (str root-path-str
-       "\\"
+       WINDOWS_PATH_SEPARATOR
        (:artist metadata-map)
-       "\\"
+       WINDOWS_PATH_SEPARATOR
        (:album metadata-map)
-       "\\"
-       (:track metadata-map) " - " (:title metadata-map)))
+       WINDOWS_PATH_SEPARATOR
+       (:track metadata-map) " - " (:title metadata-map)
+       MP3_EXT))
 
 (defn filter-orphan-records
   [music-lib]
@@ -38,7 +39,7 @@
       (->> orphaned-recs
            (map :songs)
            (flatten)
-           (map (fn [file-str] (str root-path-str "\\" file-str)))
+           (map (fn [file-str] (str root-path-str WINDOWS_PATH_SEPARATOR file-str)))
            (map #(extract-metadata-from-mp3 %))
            (filter #(:artist %))
            (map #(assoc % :dest-path (construct-destination-path root-path-str %)))))))
