@@ -21,7 +21,7 @@
        WINDOWS_PATH_SEPARATOR
        (:album metadata-map)
        WINDOWS_PATH_SEPARATOR
-       (:track metadata-map) " - " (:title metadata-map)
+       (:track metadata-map) " - " (clojure.string/replace (:title metadata-map) "/" "_")
        MP3_EXT))
 
 (defn filter-orphan-records

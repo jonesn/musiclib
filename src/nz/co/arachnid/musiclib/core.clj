@@ -26,6 +26,7 @@
         ""
         "Example Usage Windows: musicLib -p C:\\Users\\Nick Jones\\Music"
         "Example Usage Linux:   musicLib -p /home/jonesn/Music"
+        "java -jar C:\\dev\\arachnid\\clojure\\musiclib\\target\\uberjar\\musiclib-0.1.0-SNAPSHOT-standalone.jar --path \"C:\\Users\\Nick Jones\\Music\" --fix true"
         ""
         "Options:"
         options-summary]
@@ -35,7 +36,7 @@
   [orphan-albums-to-fix-seq]
   (doseq [rec orphan-albums-to-fix-seq]
     (let [strange-array-pair (first (key rec))]
-      (printf "%-25s %-20s \n" (first strange-array-pair) (second strange-array-pair)))))
+      (printf "%-25s %-100s \n" (first strange-array-pair) (second strange-array-pair)))))
   
 
 (defn print-stats-only
@@ -71,7 +72,7 @@
     (cond
       (:help options)                       (exit 0 (usage summary))
       (< (count options) 1)                 (exit 1 (usage summary))
-      (:path options)                       (run  (:path options) (true? (:fix options)))
+      (and (:path options) (:fix options))  (run  (:path options) true)
       :default                              (run  (:path options) false))))
 
 ;; ================================
@@ -87,6 +88,7 @@
   (def orphan-stats     (generate-orphan-stats    orphan-seq))
   (print-stats-only stats orphan-stats)
   (fix-orphans-in-lib!  path orphan-stats)
+  (run path false)
   (take 5 orphan-seq)
   (take 5 orphan-stats)
   (count orphan-seq)
