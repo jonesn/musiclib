@@ -51,7 +51,8 @@
   (println "         TO FIX             ")
   (println "============================")
   (println)
-  (print-orphaned-albums orphan-albums-to-fix))
+  (print-orphaned-albums orphan-albums-to-fix)
+  (println "============================"))
 
 (defn run
   [path-string fix?]
