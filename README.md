@@ -1,4 +1,4 @@
-# musiclib
+# Music Lib
 
 Print Statistics and Orphaned File Usage in Music Library
 
@@ -6,10 +6,9 @@ Print Statistics and Orphaned File Usage in Music Library
  - Total Library Size and by extension
  - Nice colours, its a report.
  - Fix mode for orphaned files.
+ - Compare local Music with Pono player. Show Diffs.
  
 ## Usage
-
-FIXME: explanation
 
     $ java -jar musiclib-0.1.0-standalone.jar [args]
 

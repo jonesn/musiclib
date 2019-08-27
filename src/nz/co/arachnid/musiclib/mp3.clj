@@ -37,6 +37,7 @@
     (let [orphaned-recs (filter-orphan-records music-lib)
           root-path-str (:path (first orphaned-recs))]
       (->> orphaned-recs
+           (filter #(= (:format %) :mp3))
            (map :songs)
            (flatten)
            (map (fn [file-str] (str root-path-str WINDOWS_PATH_SEPARATOR file-str)))

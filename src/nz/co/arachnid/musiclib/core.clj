@@ -81,8 +81,8 @@
 ;; ================================
 
 (comment
-  (def path             "C:\\Users\\Nick Jones\\Music")
-  (def lib              (generate-music-lib "C:\\Users\\Nick Jones\\Music"))
+  (def path             "/C:/Users/Nick Jones/Music")
+  (def lib              (generate-music-lib path))
   (def orphaned-records (filter-for-artist ORPHAN lib))
   (def stats            (generate-library-stats   lib))
   (def orphan-seq       (extract-orphan-meta-data lib))
@@ -96,6 +96,7 @@
   (count orphan-stats)
   (run path false)
   (user/rebl-start)
+  (user/rebl-send lib)
   (user/rebl-send orphan-seq)
   (user/rebl-send orphan-stats))
 

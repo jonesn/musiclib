@@ -52,24 +52,26 @@
   [root-file directory-set file-set]
   (cond
     ;; Check if we are at a leaf node
-    (empty? directory-set)             (create-artist-entry
+    (empty? directory-set)             (create-artist-song-set
                                          (extract-artist root-file)
                                          (fs/name root-file)
-                                         file-set
-                                         (.getAbsolutePath root-file))
+                                         (.getAbsolutePath root-file)
+                                         file-set)
+
     ;; Otherwise check for orphaned files
     (and (not (empty? directory-set))
-         (not (empty? file-set)))      (create-artist-entry
+         (not (empty? file-set)))      (create-artist-song-set
                                          ORPHAN
                                          ORPHAN
-                                         (filter-orphan-extensions file-set)
-                                         (.getAbsolutePath root-file))))
+                                         (.getAbsolutePath root-file)
+                                         (filter-orphan-extensions file-set))))
+
 
 (defn- count-extensions
   [music-lib-seq extn-string]
   (->>
     music-lib-seq
-    (map :songs)
+    (map :song-set)
     (map seq)
     (flatten)
     (map upper-extension)
@@ -110,7 +112,8 @@
   (when (string? file-path-string)
     (->>
       (fs/walk extract-music-file-details file-path-string)
-      (filter #(not (nil? %))))))
+      (filter #(not (nil? %)))
+      (assert-valid-lib))))
 
 
 (defn generate-library-stats
@@ -120,10 +123,11 @@
         artist-count (count-entry-by-key :artist lib)
         album-count  (count-entry-by-key :album lib)
         orphan-count (count-songs-for-artist ORPHAN lib)]
-    (create-result-entry album-count artist-count mp3-count flac-count orphan-count)))
+    (->LibStats album-count artist-count mp3-count flac-count orphan-count)))
 
 
 (defn generate-orphan-stats
   [orphan-rec-seq]
-  (group-by (fn [rec] {(:artist rec) (:album rec)})
-            orphan-rec-seq))
+  (when (not (empty? orphan-rec-seq))
+   (group-by (fn [rec] {(:artist rec) (:album rec)})
+             orphan-rec-seq)))
