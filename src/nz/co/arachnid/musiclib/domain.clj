@@ -8,10 +8,12 @@
 
 (def FLAC_EXT ".FLAC")
 (def MP3_EXT ".MP3")
+;; M3U is a playlist format.
+(def M3U_EXT ".M3U")
 (def ORPHAN "Orphan")
 (def WINDOWS_PATH_SEPARATOR "\\")
 
-(def ORPHAN-EXTENSIONS #{FLAC_EXT MP3_EXT})
+(def ORPHAN-EXTENSIONS #{FLAC_EXT MP3_EXT M3U_EXT})
 
 (defn- define-format
   "Takes the extension off the end of a file name and upper cases it.

@@ -98,5 +98,6 @@
   (user/rebl-start)
   (user/rebl-send lib)
   (user/rebl-send orphan-seq)
-  (user/rebl-send orphan-stats))
+  (user/rebl-send orphan-stats)
+  (run path false))
 
