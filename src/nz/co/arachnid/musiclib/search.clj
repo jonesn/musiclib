@@ -21,7 +21,7 @@
     true))
 
 
-(defn- upper-extension
+(defn upper-extension
   "Takes the extension off the end of a file name and upper cases it. Results include the '.'
    I.e. '.MP3'"
   [file-path]
@@ -39,32 +39,6 @@
       (reverse
         (fs/split
           (fs/absolute root-file))))))
-
-
-(defn- filter-orphan-extensions
-  [file-set]
-  (filter
-    (fn [file-path] (exists? (upper-extension file-path) ORPHAN-EXTENSIONS))
-    file-set))
-
-
-(defn- extract-music-file-details
-  [root-file directory-set file-set]
-  (cond
-    ;; Check if we are at a leaf node
-    (empty? directory-set)             (create-artist-song-set
-                                         (extract-artist root-file)
-                                         (fs/name root-file)
-                                         (.getAbsolutePath root-file)
-                                         file-set)
-
-    ;; Otherwise check for orphaned files
-    (and (not (empty? directory-set))
-         (not (empty? file-set)))      (create-artist-song-set
-                                         ORPHAN
-                                         ORPHAN
-                                         (.getAbsolutePath root-file)
-                                         (filter-orphan-extensions file-set))))
 
 
 (defn- count-extensions
@@ -92,6 +66,30 @@
 ;;      API
 ;; ===============
 
+(defn filter-orphan-extensions
+  [file-set]
+  (into []
+        (filter (fn [file-path] (exists? (upper-extension file-path) ORPHAN-EXTENSIONS))
+                file-set)))
+
+(defn- extract-music-file-details
+  [root-file directory-set file-set]
+  (cond
+    ;; Check if we are at a leaf node
+    (empty? directory-set)             (create-artist-song-set
+                                         (extract-artist root-file)
+                                         (fs/name root-file)
+                                         (.getAbsolutePath root-file)
+                                         file-set)
+
+    ;; Otherwise check for orphaned files
+    (and (not (empty? directory-set))
+         (not (empty? file-set)))      (create-artist-song-set
+                                         ORPHAN
+                                         ORPHAN
+                                         (.getAbsolutePath root-file)
+                                         (filter-orphan-extensions file-set))))
+
 (defn filter-for-artist
   [artist-str music-lib-seq]
   (->>
@@ -118,12 +116,13 @@
 
 (defn generate-library-stats
   [lib]
-  (let [mp3-count    (count-extensions lib MP3_EXT)
-        flac-count   (count-extensions lib FLAC_EXT)
-        artist-count (count-entry-by-key :artist lib)
-        album-count  (count-entry-by-key :album lib)
-        orphan-count (count-songs-for-artist ORPHAN lib)]
-    (->LibStats album-count artist-count mp3-count flac-count orphan-count)))
+  (when lib
+    (let [mp3-count    (count-extensions lib MP3_EXT)
+          flac-count   (count-extensions lib FLAC_EXT)
+          artist-count (count-entry-by-key :artist lib)
+          album-count  (count-entry-by-key :album lib)
+          orphan-count (count-songs-for-artist ORPHAN lib)]
+      (create-lib-stats album-count artist-count mp3-count flac-count orphan-count))))
 
 
 (defn generate-orphan-stats

@@ -81,8 +81,9 @@
 ;; ================================
 
 (comment
-  (def path             "/C:/Users/Nick Jones/Music")
+  (def path             "/home/jonesn/Music")
   (def lib              (generate-music-lib path))
+  lib
   (def orphaned-records (filter-for-artist ORPHAN lib))
   (def stats            (generate-library-stats   lib))
   (def orphan-seq       (extract-orphan-meta-data lib))
