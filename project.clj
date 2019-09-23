@@ -7,6 +7,7 @@
                  [clj-commons/fs           "1.5.0"]
                  [org.clojure/tools.cli    "0.4.2"]
                  [com.mpatric/mp3agic      "0.9.1"]
+                 [clojure-term-colors      "0.1.0"]
                  [org.clojure/core.async "0.4.490"]]
   :main ^:skip-aot nz.co.arachnid.musiclib.core
   :target-path "target/%s"

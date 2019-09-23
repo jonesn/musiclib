@@ -35,9 +35,6 @@
     (let [results (filter-orphan-extensions files-with-extensions)]
       (is (= 8 (count results))))))
 
-(deftest test-filter-orphan-format)
-
-
 (deftest test-define-format
   (testing "All extensions will be covered."
     (is (= nil               (define-format nil)))

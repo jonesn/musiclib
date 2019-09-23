@@ -5,6 +5,7 @@
   (:use     [nz.co.arachnid.musiclib.filesystem])
   (:require [clojure.tools.cli :refer [parse-opts]]
             [clojure.string :as string])
+  (:require [clojure.term.colors :as clr])
   (:gen-class))
 
 (def command-line-schema
@@ -14,7 +15,7 @@
                   - /home/jonesn/Music"]
    ["-f" "--fix   Should orphaned files be moved to the correct place in the file system."]])
 
-(defn exit [status msg]
+(defn exit! [status msg]
   (println msg)
   (System/exit status))
 
@@ -32,27 +33,30 @@
         options-summary]
        (string/join \newline)))
 
-(defn print-orphaned-albums
+(defn print-orphaned-albums!
   [orphan-albums-to-fix-seq]
   (doseq [rec orphan-albums-to-fix-seq]
     (let [strange-array-pair (first (key rec))]
       (printf "%-25s %-100s \n" (first strange-array-pair) (second strange-array-pair)))))
   
 
-(defn print-stats-only
+(defn print-stats-only!
   [stats orphan-albums-to-fix]
+  (println (clr/blue "============================"))
+  (println (clr/blue "          SUMMARY           "))
+  (println (clr/blue "============================"))
   (printf "%-20s %6d \n" "Artist Total:" (:artist-count stats))
   (printf "%-20s %6d \n" "Album Total:"  (:album-count stats))
   (printf "%-20s %6d \n" "MP3 Total:"    (:mp3-count stats))
   (printf "%-20s %6d \n" "FLAC Total:"   (:flac-count stats))
   (printf "%-20s %6d \n" "Orphan Total:" (:orphan-count stats))
   (println)
-  (println "============================")
-  (println "         TO FIX             ")
-  (println "============================")
+  (println (clr/blue "============================"))
+  (println (clr/blue "         TO FIX             "))
+  (println (clr/blue "============================"))
   (println)
-  (print-orphaned-albums orphan-albums-to-fix)
-  (println "============================"))
+  (print-orphaned-albums! orphan-albums-to-fix)
+  (println (clr/blue "============================")))
 
 (defn run
   [path-string fix?]
@@ -60,7 +64,7 @@
         stats                 (generate-library-stats   lib)
         orphan-meta-data      (extract-orphan-meta-data lib)
         orphan-albums-to-fix  (generate-orphan-stats    orphan-meta-data)]
-    (print-stats-only stats orphan-albums-to-fix)
+    (print-stats-only! stats orphan-albums-to-fix)
     (when fix?
       (fix-orphans-in-lib! path-string orphan-albums-to-fix))))
 
@@ -71,8 +75,8 @@
         options    (:options cli-params)
         summary    (:summary cli-params)]
     (cond
-      (:help options)                       (exit 0 (usage summary))
-      (< (count options) 1)                 (exit 1 (usage summary))
+      (:help options)                       (exit! 0 (usage summary))
+      (< (count options) 1)                 (exit! 1 (usage summary))
       (and (:path options) (:fix options))  (run  (:path options) true)
       :default                              (run  (:path options) false))))
 
@@ -88,7 +92,7 @@
   (def stats            (generate-library-stats   lib))
   (def orphan-seq       (extract-orphan-meta-data lib))
   (def orphan-stats     (generate-orphan-stats    orphan-seq))
-  (print-stats-only stats orphan-stats)
+  (print-stats-only! stats orphan-stats)
   (fix-orphans-in-lib!  path orphan-stats)
   (run path false)
   (take 5 orphan-seq)
