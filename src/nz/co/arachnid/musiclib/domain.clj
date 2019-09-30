@@ -63,7 +63,7 @@
 
 (s/def ::artist-song-set  (s/keys :req-un [::artist ::album ::root-file ::song-set ::format]))
 (s/def ::lib-stat         (s/keys :req-un [::album-count ::artist-count ::mp3-count ::flac-count ::orphan-count]))
-(s/def ::artist-song-sets (s/and not-nil? (s/+ ::artist-song-set)))
+(s/def ::artist-song-sets (s/and not-nil? (s/coll-of ::artist-song-set :kind set? :into #{})))
 
 ;; ===============
 ;;     Records
@@ -107,6 +107,12 @@
 ;;    Assertions
 ;; ================
 
-(defn assert-valid-lib
+(defn assert-valid-lib!
   [lib]
   (s/assert ::artist-song-sets lib))
+
+(defn valid-lib?
+  [lib]
+  (s/valid? ::artist-song-sets lib))
+
+

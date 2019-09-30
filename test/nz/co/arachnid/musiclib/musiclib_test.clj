@@ -53,8 +53,8 @@
 ;;       Library Tests
 ;; ==========================
 
-(def lib-a
-  [(create-artist-song-set
+(def blood-mountain
+  (create-artist-song-set
     {:artist "Mastodon"
      :album "Blood Mountain"
      :root-file "/home/jonesn/Music/Mastodon/Blood Mountain"
@@ -71,63 +71,50 @@
        "11 - Siberian Divide.mp3"
        "12 - Pendulous Skin.mp3"
        "02 - Crystal Skull.mp3"}
-     :format :mp3})
-   (create-artist-song-set
-    {:artist "Nirvana"
-     :album "In Utero"
-     :root-file "/home/jonesn/Music/Nirvana/In Utero"
-     :song-set
-     #{"03 - Nirvana - Heart-Shaped Box.flac"
-       "07 - Nirvana - Very Ape.flac"
-       "04 - Nirvana - Rape Me.flac"
-       "06 - Nirvana - Dumb.flac"
-       "13 - Nirvana - Gallons Of Rubing Alcohol Flow.flac"
-       "01 - Nirvana - Serve The Servants.flac"
-       "09 - Nirvana - Pennyroyal Tea.flac"
-       "08 - Nirvana - Milk It.flac"
-       "11 - Nirvana - Tourette's.flac"
-       "12 - Nirvana - All Apologies.flac"
-       "10 - Nirvana - Radio Friendly Unit Shifter.flac"
-       "02 - Nirvana - Scentless Apprentice.flac"
-       "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.flac"}
-     :format :flac})])
+     :format :mp3}))
 
-(def lib-b
-  [{:artist "Nirvana",
-    :album "In Utero",
-    :root-file "/home/jonesn/Music/Nirvana/In Utero",
-    :song-set
-    #{"03 - Nirvana - Heart-Shaped Box.flac"
-      "07 - Nirvana - Very Ape.flac"
-      "04 - Nirvana - Rape Me.flac"
-      "06 - Nirvana - Dumb.flac"
-      "13 - Nirvana - Gallons Of Rubing Alcohol Flow.flac"
-      "01 - Nirvana - Serve The Servants.flac"
-      "09 - Nirvana - Pennyroyal Tea.flac"
-      "08 - Nirvana - Milk It.flac"
-      "11 - Nirvana - Tourette's.flac"
-      "12 - Nirvana - All Apologies.flac"
-      "10 - Nirvana - Radio Friendly Unit Shifter.flac"
-      "02 - Nirvana - Scentless Apprentice.flac"
-      "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.flac"},
-    :format :flac}
-   {:artist "Nirvana",
-    :album "Nevermind",
-    :root-file "/home/jonesn/Music/Nirvana/Nevermind",
-    :song-set
-    #{"07 - Nirvana - Territorial Pissings.flac"
-      "05 - Nirvana - Lithium.flac"
-      "08 - Nirvana - Drain You.flac"
-      "04 - Nirvana - Breed.flac"
-      "11 - Nirvana - On A Plain.flac"
-      "03 - Nirvana - Come As You Are.flac"
-      "02 - Nirvana - In Bloom.flac"
-      "09 - Nirvana - Lounge Act.flac"
-      "10 - Nirvana - Stay Away.flac"
-      "01 - Nirvana - Smells Like Teen Spirit.flac"
-      "12 - Nirvana - Something In The Way - [Hidden Track].flac"
-      "06 - Nirvana - Polly.flac"},
-    :format :flac}])
+(def nevermind
+  (create-artist-song-set
+    {:artist "Nirvana",
+     :album "Nevermind",
+     :root-file "/home/jonesn/Music/Nirvana/Nevermind",
+     :song-set
+     #{"07 - Nirvana - Territorial Pissings.flac"
+       "05 - Nirvana - Lithium.flac"
+       "08 - Nirvana - Drain You.flac"
+       "04 - Nirvana - Breed.flac"
+       "11 - Nirvana - On A Plain.flac"
+       "03 - Nirvana - Come As You Are.flac"
+       "02 - Nirvana - In Bloom.flac"
+       "09 - Nirvana - Lounge Act.flac"
+       "10 - Nirvana - Stay Away.flac"
+       "01 - Nirvana - Smells Like Teen Spirit.flac"
+       "12 - Nirvana - Something In The Way - [Hidden Track].flac"
+       "06 - Nirvana - Polly.flac"},
+     :format :flac}))
+
+(def inutero
+  {:artist "Nirvana",
+   :album "In Utero",
+   :root-file "/home/jonesn/Music/Nirvana/In Utero",
+   :song-set
+   #{"03 - Nirvana - Heart-Shaped Box.flac"
+     "07 - Nirvana - Very Ape.flac"
+     "04 - Nirvana - Rape Me.flac"
+     "06 - Nirvana - Dumb.flac"
+     "13 - Nirvana - Gallons Of Rubing Alcohol Flow.flac"
+     "01 - Nirvana - Serve The Servants.flac"
+     "09 - Nirvana - Pennyroyal Tea.flac"
+     "08 - Nirvana - Milk It.flac"
+     "11 - Nirvana - Tourette's.flac"
+     "12 - Nirvana - All Apologies.flac"
+     "10 - Nirvana - Radio Friendly Unit Shifter.flac"
+     "02 - Nirvana - Scentless Apprentice.flac"
+     "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.flac"},
+   :format :flac})
+
+(def lib-a #{blood-mountain nevermind})
+(def lib-b #{inutero nevermind})
 
 (deftest test-generate-library-stats
   (testing "Empty Lib checks"
@@ -141,6 +128,20 @@
     (is (= (create-lib-stats {:artist-count 2
                               :album-count  2
                               :mp3-count    12
-                              :flac-count   13
+                              :flac-count   12
                               :orphan-count 0})  (generate-library-stats lib-a)))))
+
+(deftest test-diff-libs
+  (testing "Zero Case - Nils either side and invalid params."
+    (is (nil? (diff-libs nil nil)))
+    (is (nil? (diff-libs nil  {})))
+    (is (nil? (diff-libs {}  nil)))
+    (is (nil? (diff-libs {}   {})))
+    (is (nil? (diff-libs {}    1))))
+  (testing "One Case - Blood Mountain is in Lib A Only
+                       In Utero is in Lib B Only
+                       Nevermind is in both"
+    (is (= #{blood-mountain} (:lib-a-only       (diff-libs lib-a lib-b))))
+    (is (= #{inutero}        (:lib-b-only       (diff-libs lib-a lib-b))))
+    (is (= #{nevermind}      (:lib-a-and-lib-b  (diff-libs lib-a lib-b))))))
 

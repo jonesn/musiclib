@@ -8,6 +8,7 @@
     2. To provide stats for those entries."}
   nz.co.arachnid.musiclib.search
   (:require [me.raynes.fs :as fs])
+  (:require [clojure.set  :as set])
   (:use     [nz.co.arachnid.musiclib.domain]))
 
 ;; ===============
@@ -111,7 +112,7 @@
     (->>
       (fs/walk extract-music-file-details file-path-string)
       (filter #(not (nil? %)))
-      (assert-valid-lib))))
+      (assert-valid-lib!))))
 
 
 (defn generate-library-stats
@@ -130,3 +131,16 @@
   (when (not (empty? orphan-rec-seq))
    (group-by (fn [rec] {(:artist rec) (:album rec)})
              orphan-rec-seq)))
+
+
+(defn diff-libs
+  [lib-a lib-b]
+  (when
+    (and
+      (valid-lib? lib-a)
+      (valid-lib? lib-b))
+    {:lib-a-only          (set/difference lib-a lib-b)
+     :lib-a-and-lib-b     (set/intersection lib-a lib-b)
+     :lib-b-only          (set/difference lib-b lib-a)}))
+
+
