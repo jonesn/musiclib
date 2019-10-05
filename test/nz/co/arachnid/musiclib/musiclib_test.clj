@@ -145,3 +145,4 @@
     (is (= #{inutero}        (:lib-b-only       (diff-libs lib-a lib-b))))
     (is (= #{nevermind}      (:lib-a-and-lib-b  (diff-libs lib-a lib-b))))))
 
+(diff-libs lib-a lib-b)

@@ -112,6 +112,7 @@
     (->>
       (fs/walk extract-music-file-details file-path-string)
       (filter #(not (nil? %)))
+      (into #{})
       (assert-valid-lib!))))
 
 
@@ -126,21 +127,32 @@
       (create-lib-stats album-count artist-count mp3-count flac-count orphan-count))))
 
 
-(defn generate-orphan-stats
+(defn group-lib-by-artist-album
   [orphan-rec-seq]
   (when (not (empty? orphan-rec-seq))
    (group-by (fn [rec] {(:artist rec) (:album rec)})
              orphan-rec-seq)))
 
-
+;; Change this to use filter based on a subset of the keys in the lib so we can match regardless of path.
 (defn diff-libs
   [lib-a lib-b]
   (when
     (and
       (valid-lib? lib-a)
       (valid-lib? lib-b))
-    {:lib-a-only          (set/difference lib-a lib-b)
-     :lib-a-and-lib-b     (set/intersection lib-a lib-b)
-     :lib-b-only          (set/difference lib-b lib-a)}))
+    (let [lib-a-keys      (map artist-song-key-set lib-a)
+          lib-b-keys      (map artist-song-key-set lib-b)
+          lib-a-only      (into #{} (for [rec-a lib-a
+                                          :when (not (artist-song-in-lib? rec-a lib-b-keys))]
+                                      rec-a))
+          lib-a-and-lib-b (into #{} (for [rec-a lib-a
+                                          :when (artist-song-in-lib? rec-a lib-b-keys)]
+                                      rec-a))
+          lib-b-only      (into #{} (for [rec-b lib-b
+                                          :when (not (artist-song-in-lib? rec-b lib-a-keys))]
+                                      rec-b))]
+      {:lib-a-only          lib-a-only
+       :lib-a-and-lib-b     lib-a-and-lib-b
+       :lib-b-only          lib-b-only})))
 
 

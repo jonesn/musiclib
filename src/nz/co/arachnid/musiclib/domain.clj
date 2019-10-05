@@ -1,6 +1,7 @@
 (ns nz.co.arachnid.musiclib.domain
   (:require [clojure.spec.alpha :as s]
-            [me.raynes.fs :as fs]))
+            [me.raynes.fs :as fs]
+            [clojure.set :as set]))
 
 ;; ===============
 ;;    Constants
@@ -47,6 +48,11 @@
   [ex]
   (not (nil? ex)))
 
+(defn upper
+  [s]
+  (when s
+    (clojure.string/upper-case s)))
+
 (s/check-asserts true)
 
 (s/def ::artist    non-blank-string?)
@@ -75,6 +81,11 @@
 (defrecord LibStats
   [album-count artist-count mp3-count flac-count orphan-count])
 
+(defn artist-song-key-set
+  [artist-song-set]
+  {:artist (upper (:artist artist-song-set))
+   :album  (upper (:album  artist-song-set))
+   :format (upper (:format  artist-song-set))})
 
 (defn create-artist-song-set
   ([m-params]
@@ -106,6 +117,15 @@
 ;; ================
 ;;    Assertions
 ;; ================
+
+(defn artist-song-in-lib?
+  "Compares ArtistSongSet on artist, album, format"
+  [song-to-check lib]
+  (not
+    (empty?
+      (set/intersection
+        #{(artist-song-key-set song-to-check)}
+        (into #{} lib)))))
 
 (defn assert-valid-lib!
   [lib]
