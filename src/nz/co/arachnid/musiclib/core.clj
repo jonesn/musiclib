@@ -21,12 +21,21 @@
 (defn usage
   [options-summary]
   (->> ["This program prints the statistics of the tree of Music under the given path."
-        "It also provides the option to try and correct files that don't fall into the
+         "It also provides the option to try and correct files that don't fall into the
          artist/album/song hierarchy."
         ""
+        "Summary Commands:"
+        "================="
         "Example Usage Windows: musicLib -p C:\\Users\\Nick Jones\\Music"
         "Example Usage Linux:   musicLib -p /home/jonesn/Music"
+        ""
+        "Fix Orphans:"
+        "============"
         "java -jar C:\\dev\\arachnid\\clojure\\musiclib\\target\\uberjar\\musiclib-0.1.0-SNAPSHOT-standalone.jar --path \"C:\\Users\\Nick Jones\\Music\" --fix true"
+        ""
+        "Diff Two Libs:"
+        "=============="
+        "java -jar target/uberjar/musiclib-0.1.0-SNAPSHOT-standalone.jar -p ~/Music -q /run/media/jonesn/PONOPLAYER/Music"
         ""
         "Options:"
         options-summary]
@@ -92,7 +101,6 @@
   (let [cli-params (parse-opts args command-line-schema)
         options    (:options cli-params)
         summary    (:summary cli-params)]
-    (println options)
     (cond
       (:help options)                        (exit! 0 (usage summary))
       (< (count options) 1)                  (exit! 1 (usage summary))
