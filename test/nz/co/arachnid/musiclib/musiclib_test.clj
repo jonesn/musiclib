@@ -37,7 +37,7 @@
 
 (deftest test-define-format
   (testing "All extensions will be covered."
-    (is (= nil               (define-format nil)))
+    (is (= :not-supported    (define-format nil)))
     (is (= :not-supported    (define-format "abcd")))
     (is (= :not-supported    (define-format "abcd.efg")))
     (is (= :not-supported    (define-format "abcd.e")))

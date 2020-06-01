@@ -25,7 +25,7 @@
    :flac
    :not-supported"
   [file-path]
-  (when file-path
+  (if file-path
     (let [extn        (fs/extension file-path)
           upper-extn  (when extn (clojure.string/upper-case extn))]
       (case upper-extn
@@ -33,7 +33,8 @@
         ".MP3"    :mp3
         ".FLAC"   :flac
         ".M3U"    :m3u
-        :not-supported))))
+        :not-supported))
+    :not-supported))
 
 ;; ===============
 ;;     Specs
