@@ -36,7 +36,12 @@ Options:
   -p, --path  The parent directory to scan I.e. C:\Users\Nick Jones\Music OR /home/jonesn/Music
   -q, --path2 If provided a diff report will be printed between the lib at 'path' and that at 'path2'
   -f, --fix   Should orphaned files be moved to the correct place in the file system.
+```
 
+## Check For Corrupted FLACs
+
+```
+find WinMusic -type f -iname '*.flac' -print0 | xargs --null flac -wst
 ```
 
 ### Bugs
