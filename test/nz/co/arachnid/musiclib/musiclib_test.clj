@@ -113,8 +113,25 @@
      "05 - Nirvana - Frances Farmer Will Have Her Revenge On Seattle.flac"},
    :format :flac})
 
-(def lib-a #{blood-mountain nevermind})
-(def lib-b #{inutero nevermind})
+(def gs-with-art
+  {:artist "Godspeed You! Black Emperor",
+   :album "Lift Your Skinny Fists Like Antennas To Heaven (Disc 1)",
+   :root-file "/opt/plexmedia/music/Godspeed You! Black Emperor/Lift Your Skinny Fists Like Antennas To Heaven (Disc 1)",
+   :song-set
+   #{"Folder.jpg" 
+     "01 Storm.mp3" 
+     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Small.jpg" 
+     "AlbumArtSmall.jpg"
+     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Large.jpg" 
+     "02 Static.mp3"},
+   :format :mp3})
+
+(def test-lib-a #{blood-mountain nevermind})
+(def test-lib-b #{inutero nevermind})
+
+(deftest test-define-format-song-set
+  (testing "All extensions will be covered."
+    (is (= :mp3 (define-format-for-song-set (:song-set gs-with-art))))))
 
 (deftest test-generate-library-stats
   (testing "Empty Lib checks"
@@ -129,7 +146,7 @@
                               :album-count  2
                               :mp3-count    12
                               :flac-count   12
-                              :orphan-count 0})  (generate-library-stats lib-a)))))
+                              :orphan-count 0})  (generate-library-stats test-lib-a)))))
 
 (deftest test-diff-libs
   (testing "Zero Case - Nils either side and invalid params."
@@ -141,8 +158,8 @@
   (testing "One Case - Blood Mountain is in Lib A Only
                        In Utero is in Lib B Only
                        Nevermind is in both"
-    (is (= #{blood-mountain} (:lib-a-only       (diff-libs lib-a lib-b))))
-    (is (= #{inutero}        (:lib-b-only       (diff-libs lib-a lib-b))))
-    (is (= #{nevermind}      (:lib-a-and-lib-b  (diff-libs lib-a lib-b))))))
+    (is (= #{blood-mountain} (:lib-a-only       (diff-libs test-lib-a test-lib-b))))
+    (is (= #{inutero}        (:lib-b-only       (diff-libs test-lib-a test-lib-b))))
+    (is (= #{nevermind}      (:lib-a-and-lib-b  (diff-libs test-lib-a test-lib-b))))))
 
-(diff-libs lib-a lib-b)
+(diff-libs test-lib-a test-lib-b)

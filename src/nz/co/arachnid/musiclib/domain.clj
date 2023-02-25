@@ -1,7 +1,8 @@
 (ns nz.co.arachnid.musiclib.domain
-  (:require [clojure.spec.alpha :as s]
-            [me.raynes.fs :as fs]
-            [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [clojure.spec.alpha :as s]
+            [clojure.string :as str]
+            [me.raynes.fs :as fs]))
 
 ;; ===============
 ;;    Constants
@@ -9,10 +10,11 @@
 
 (def FLAC_EXT ".FLAC")
 (def MP3_EXT ".MP3")
+(def M4A_EXT ".M4A")
 (def M3U_EXT ".M3U") ;; M3U is a playlist format.
 (def ORPHAN "Orphan")
 (def WINDOWS_PATH_SEPARATOR "\\")
-(def ORPHAN-EXTENSIONS #{FLAC_EXT MP3_EXT M3U_EXT})
+(def ORPHAN-EXTENSIONS #{FLAC_EXT MP3_EXT M3U_EXT M4A_EXT})
 
 ;; ==================
 ;;  Helper Functions
@@ -27,14 +29,22 @@
   [file-path]
   (if file-path
     (let [extn        (fs/extension file-path)
-          upper-extn  (when extn (clojure.string/upper-case extn))]
+          upper-extn  (when extn (str/upper-case extn))]
       (case upper-extn
         ;; The values to match must be straight literals.
         ".MP3"    :mp3
         ".FLAC"   :flac
         ".M3U"    :m3u
+        ".M4A"    :m4a
         :not-supported))
     :not-supported))
+
+(defn define-format-for-song-set
+  [song-set]
+  (->> song-set
+        (map define-format)
+        (filter (fn [format] (not (= :not-supported format))))
+        (first)))
 
 ;; ===============
 ;;     Specs
@@ -43,7 +53,7 @@
 (defn non-blank-string?
   [s]
   (and (string? s)
-       (not (clojure.string/blank? s))))
+       (not (str/blank? s))))
 
 (defn not-nil?
   [ex]
@@ -52,7 +62,7 @@
 (defn upper
   [s]
   (when s
-    (clojure.string/upper-case s)))
+    (str/upper-case s)))
 
 (s/check-asserts true)
 
@@ -60,7 +70,7 @@
 (s/def ::album     non-blank-string?)
 (s/def ::root-file non-blank-string?)
 (s/def ::song-set  (s/coll-of non-blank-string? :kind set?))
-(s/def ::format    (hash-set :mp3 :flac :m3u :not-supported))
+(s/def ::format    (hash-set :mp3 :flac :m3u :m4a :not-supported))
 (s/def ::artist-count nat-int?)
 (s/def ::album-count  nat-int?)
 (s/def ::artist-count nat-int?)
@@ -101,7 +111,7 @@
                               (seq? song-set)  (into (sorted-set) song-set)
                               (coll? song-set) (into (sorted-set) song-set)
                               :else            (sorted-set song-set))
-         format             (define-format (first sanitised-song-set))]
+         format             (define-format-for-song-set sanitised-song-set)]
       (s/assert ::artist-song-set (->ArtistSongSet artist album root-file sanitised-song-set format)))))
 
 

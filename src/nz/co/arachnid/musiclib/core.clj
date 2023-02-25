@@ -3,8 +3,9 @@
   (:use     [nz.co.arachnid.musiclib.mp3])
   (:use     [nz.co.arachnid.musiclib.domain])
   (:use     [nz.co.arachnid.musiclib.filesystem])
-  (:require [clojure.tools.cli :refer [parse-opts]]
-            [clojure.string :as string])
+  (:require [clojure.pprint :refer [print-table]]
+            [clojure.string :as string]
+            [clojure.tools.cli :refer [parse-opts]])
   (:require [clojure.term.colors :as clr])
   (:gen-class))
 
@@ -12,7 +13,8 @@
   [["-h" "--help"]
    ["-p" "--path  The parent directory to scan I.e. C:\\Users\\Nick Jones\\Music OR /home/jonesn/Music"]
    ["-q" "--path2 If provided a diff report will be printed between the lib at 'path' and that at 'path2'"]
-   ["-f" "--fix   Should orphaned files be moved to the correct place in the file system."]])
+   ["-f" "--fix   Should orphaned files be moved to the correct place in the file system."]
+   ["-l" "--list  Will print a listing table of artist album format"]])
 
 (defn exit! [status msg]
   (println msg)
@@ -40,6 +42,13 @@
         "Options:"
         options-summary]
        (string/join \newline)))
+
+(defn print-listing
+  [lib]
+  (->> lib
+       (map #(select-keys % [:artist :album :format])) 
+       (sort-by (juxt :format :artist :album)) 
+       (print-table)))
 
 (defn print-artist-album!
   [orphan-albums-to-fix-seq]
@@ -80,7 +89,7 @@
   (println (clr/blue "============================")))
 
 (defn run
-  [path-string path2-string fix?]
+  [path-string path2-string fix? list?]
   (let [lib-a                (generate-music-lib path-string)
         lib-b                (generate-music-lib path2-string)
         stats                (generate-library-stats lib-a)
@@ -93,7 +102,9 @@
                 lib-b-only (group-lib-by-artist-album (:lib-b-only diff-libs))]
             (print-lib-diff! lib-a-only lib-b-only)))
     (when fix?
-      (fix-orphans-in-lib! path-string orphan-albums-to-fix))))
+      (fix-orphans-in-lib! path-string orphan-albums-to-fix))
+    (when list?
+      (print-listing lib-a))))
 
 
 (defn -main
@@ -104,18 +115,23 @@
     (cond
       (:help options)                        (exit! 0 (usage summary))
       (< (count options) 1)                  (exit! 1 (usage summary))
-      (and (:path options) (:fix options))   (run  (:path options) nil true)
-      (and (:path options) (:path2 options)) (run  (:path options) (:path2 options) false)
-      :default                               (run  (:path options) nil false))))
+      (and (:path options) (:fix options))   (run  (:path options) nil true false)
+      (and (:path options) (:list options))  (run  (:path options) nil false true)
+      (and (:path options) (:path2 options)) (run  (:path options) (:path2 options) false false)
+      :default                               (run  (:path options) nil false true))))
 
 ;; ================================
 ;;       REPL Test Functions
 ;; ================================
 
 (comment
-  (def path               "/home/jonesn/Music")
+  (def path               "/opt/plexmedia/music")
   (def lib-a              (generate-music-lib path))
-  (def lib-b              (generate-music-lib "/run/media/jonesn/PONOPLAYER/Music"))
+  (def lib-b              (->> 
+                           (generate-music-lib "/opt/plexmedia/music")
+                           (map #(select-keys % [:artist :album :format]))
+                           (sort-by (juxt :format :artist :album))
+                           (print-table)))
   lib-a
   (def orphaned-records (filter-for-artist ORPHAN lib-a))
   (def stats            (generate-library-stats   lib-a))
@@ -129,11 +145,6 @@
   (take 5 orphan-stats)
   (count orphan-seq)
   (count orphan-stats)
-  (run path false)
-  (user/rebl-start)
-  (user/rebl-send lib-a)
-  (user/rebl-send orphan-seq)
-  (user/rebl-send orphan-stats)
-  (user/rebl-send diff)
+  (run path false) 
   (run path false))
 
