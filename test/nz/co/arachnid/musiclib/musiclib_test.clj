@@ -126,12 +126,27 @@
      "02 Static.mp3"},
    :format :mp3})
 
+(def pf-wav-with-art
+  {:artist "Pink Floyd",
+   :album "Meddle",
+   :root-file "/bla/bla/meddle",
+   :song-set
+   #{"Folder.jpg"
+     "01 boo.wav"
+     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Small.jpg"
+     "AlbumArtSmall.jpg"
+     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Large.jpg"
+     },
+   :format :not-supported})
+
+
 (def test-lib-a #{blood-mountain nevermind})
 (def test-lib-b #{inutero nevermind})
 
 (deftest test-define-format-song-set
   (testing "All extensions will be covered."
-    (is (= :mp3 (define-format-for-song-set (:song-set gs-with-art))))))
+    (is (= :mp3 (define-format-for-song-set (:song-set gs-with-art))))
+    (is (= :not-supported (define-format-for-song-set (:song-set pf-wav-with-art))))))
 
 (deftest test-generate-library-stats
   (testing "Empty Lib checks"

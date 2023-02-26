@@ -44,4 +44,10 @@ Options:
 find WinMusic -type f -iname '*.flac' -print0 | xargs --null flac -wst
 ```
 
+## Albums To Replace
+
+ - Nevermind
+ - Original Rage
+ - Sigur Ros Albums
+
 ### Bugs

@@ -20,6 +20,12 @@
 ;;  Helper Functions
 ;; ==================
 
+(defn nil-default
+  [nilable-a default]
+  (if (nil? nilable-a)
+    default
+    nilable-a))
+
 (defn define-format
   "Takes the extension off the end of a file name and upper cases it.
    It then categorizes the extension as a format.
@@ -41,10 +47,12 @@
 
 (defn define-format-for-song-set
   [song-set]
-  (->> song-set
+  (nil-default
+    (->> song-set
         (map define-format)
         (filter (fn [format] (not (= :not-supported format))))
-        (first)))
+        (first))
+    :not-supported))
 
 ;; ===============
 ;;     Specs
