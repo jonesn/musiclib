@@ -140,11 +140,10 @@
 (defn artist-song-in-lib?
   "Compares ArtistSongSet on artist, album, format"
   [song-to-check lib]
-  (not
-    (empty?
-      (set/intersection
-        #{(artist-song-key-set song-to-check)}
-        (into #{} lib)))))
+  (seq 
+    (set/intersection
+         #{(artist-song-key-set song-to-check)}
+         (into #{} lib))))
 
 (defn assert-valid-lib!
   [lib]

@@ -87,7 +87,7 @@
     (println)
     (print-artist-album! orphan-albums-to-fix))
   (println (clr/blue "============================")))
-
+ 
 (defn run
   [path-string path2-string fix? list?]
   (let [lib-a                (generate-music-lib path-string)
@@ -118,7 +118,7 @@
       (and (:path options) (:fix options))   (run  (:path options) nil true false)
       (and (:path options) (:list options))  (run  (:path options) nil false true)
       (and (:path options) (:path2 options)) (run  (:path options) (:path2 options) false false)
-      :default                               (run  (:path options) nil false true))))
+      :else                                  (run  (:path options) nil false true))))
 
 ;; ================================
 ;;       REPL Test Functions
@@ -140,11 +140,8 @@
   (def diff             (diff-libs lib-a lib-b))
   (print-stats-only! stats orphan-stats)
   (fix-orphans-in-lib!  path orphan-stats)
-  (run path false)
   (take 5 orphan-seq)
   (take 5 orphan-stats)
   (count orphan-seq)
-  (count orphan-stats)
-  (run path false) 
-  (run path false))
+  (count orphan-stats))
 
