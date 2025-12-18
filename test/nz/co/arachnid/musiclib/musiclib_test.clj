@@ -2,8 +2,7 @@
   (:require [clojure.test :refer :all]
             [nz.co.arachnid.musiclib.core :refer :all]
             [nz.co.arachnid.musiclib.search :refer :all]
-            [nz.co.arachnid.musiclib.domain :refer :all]
-            [me.raynes.fs :as fs]))
+            [nz.co.arachnid.musiclib.domain :refer :all]))
 
 ;; ==========================
 ;;    File Extension Tests
