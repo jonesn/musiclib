@@ -135,8 +135,7 @@
      "01 boo.wav"
      "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Small.jpg"
      "AlbumArtSmall.jpg"
-     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Large.jpg"
-     },
+     "AlbumArt_{B5020207-474E-4720-DAA3-C92F7CFF4C00}_Large.jpg"},
    :format :not-supported})
 
 
